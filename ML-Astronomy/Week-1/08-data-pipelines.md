@@ -78,9 +78,41 @@ Crucially, **augmentation is applied only to the training set**, never to valida
 
 A PyTorch `Dataset` is any object implementing two methods: `__len__` (how many samples) and `__getitem__(i)` (fetch sample `i`). You *can* write one by hand, but for images sorted into class folders, `torchvision` gives you one for free.
 
+### Our Galaxy Zoo 2 download is **not** ImageFolder-ready out of the box
+
+The [Kaggle Galaxy Zoo 2 mirror](https://www.kaggle.com/datasets/jaimetrickz/galaxy-zoo-2-images) we use ships:
+
+```
+galaxy_raw/
+├── gz2_filename_mapping.csv   # objid ↔ asset_id
+├── images_gz2/                # flat folder: 1.jpg, 2.jpg, …
+│   ├── 1.jpg
+│   ├── 2.jpg
+│   └── ...
+└── gz2_hart16.csv             # official morphology labels (download separately)
+```
+
+There are **no class subfolders** and **no label in the filename**. Labels live in catalogues:
+
+| File | What it tells you |
+|---|---|
+| `gz2_filename_mapping.csv` | Which JPG (`asset_id`) belongs to which galaxy (`objid`). |
+| `gz2_hart16.csv` | The debiased morphology code (`gz2_class`, e.g. `Sc2t`, `Ei`) for each `objid`. |
+
+So the Week 1 data notebook **joins these CSVs first**, collapses `gz2_class` to a few high-level buckets (`elliptical`, `spiral`, `spiral_barred`, …), then symlinks a balanced subset into:
+
+```
+galaxy_data/
+├── elliptical/    123.jpg -> ../../galaxy_raw/images_gz2/123.jpg
+├── spiral/        ...
+└── spiral_barred/ ...
+```
+
+Only after that step does `ImageFolder` apply. Real surveys often ship flat archives + tables — learning to join them is part of the job.
+
 ### `ImageFolder`: the easy button
 
-If your data is laid out like this:
+If your data is already laid out like this:
 
 ```
 galaxy_data/
@@ -227,7 +259,7 @@ If the images look like recognisable galaxies with sensible labels, your pipelin
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `ImageFolder` finds 0 images | Wrong `root`, or not in `root/class/img.jpg` layout. | Print the directory tree; fix the path/structure. |
+| `ImageFolder` finds 0 images | Wrong `root`, or data is still in the flat Kaggle layout (no class subfolders yet). | Print the directory tree; join CSV labels and build `root/class/img.jpg` first (see above). |
 | Plotted images look washed out | Forgot to undo `Normalize`. | Multiply by std, add mean before `imshow`. |
 | `TypeError` in `imshow` | Passed `(C, H, W)` instead of `(H, W, C)`. | `.permute(1, 2, 0)` and `.cpu().numpy()` if needed. |
 | `DataLoader` hangs on Colab | Too many `num_workers`. | Use `num_workers=2` (or `0` if it still hangs). |

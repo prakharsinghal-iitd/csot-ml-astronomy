@@ -112,7 +112,7 @@ You will not need to install anything locally — Colab ships every dependency a
 
 We use the **Galaxy Zoo 2** image set, curated by the Galaxy Zoo citizen-science project from imagery taken by the **Sloan Digital Sky Survey (SDSS)**.
 
-- **Kaggle mirror:** [Galaxy Zoo 2 Images](https://www.kaggle.com/datasets/jaimetrickz/galaxy-zoo-2-images) — convenient pre-packaged JPG images sorted by class.
+- **Kaggle mirror:** [Galaxy Zoo 2 Images](https://www.kaggle.com/datasets/jaimetrickz/galaxy-zoo-2-images) — convenient pre-packaged JPG cutouts plus a filename-mapping CSV (images are **not** sorted into class folders; labels come from the official GZ2 catalogues).
 - **Original catalogue paper:** [Willett et al., 2013, *Galaxy Zoo 2: detailed morphological classifications for 304,122 galaxies from the Sloan Digital Sky Survey*](https://academic.oup.com/mnras/article/435/4/2835/1023755).
 - **Provenance:** Galaxy Zoo 2 took ~300,000 SDSS galaxies and asked volunteers a **decision tree of questions** ("Is it smooth?", "Does it have a bar?", "How many spiral arms?"). Each galaxy received many independent votes; the published catalogue collapses these into morphology probabilities.
 
@@ -133,8 +133,8 @@ The "true colour" you see in the JPG is therefore a *false-colour composite*: ea
 
 Detailed download and pipeline instructions show up in **Week 1, Part 2**, when we wire up `Dataset`s and `DataLoader`s. Briefly, the flow will be:
 
-1. Download the Kaggle dataset to Colab (or your Drive) via the Kaggle API or a one-shot `wget`.
-2. Inspect the on-disk folder structure (`train/elliptical/`, `train/spiral/`, …).
+1. Download the Kaggle dataset to Colab (or your Drive) via the Kaggle API, plus the Hart et al. (2016) label CSV from [data.galaxyzoo.org](https://data.galaxyzoo.org/).
+2. Join the mapping CSV to the morphology catalogue and build an `ImageFolder`-ready layout (symlink a balanced subset into `galaxy_data/<class>/`).
 3. Wrap it in `torchvision.datasets.ImageFolder` with a `transforms` pipeline.
 4. Wrap that in a `DataLoader` for shuffled, batched iteration.
 5. Train / validate / test with a sensible split (we'll standardise on 70/15/15).
@@ -360,7 +360,7 @@ A catalogue of the most frequent ways students stumble, with their fixes. Bookma
 
 ### Data pipeline (Week 1, Part 2+)
 
-- **`ImageFolder` finds zero images** → Wrong root path, or your data isn't in `root/class_name/image.jpg` layout. Print the directory tree.
+- **`ImageFolder` finds zero images** → Wrong root path, or you pointed at the raw Kaggle download (flat `{asset_id}.jpg` files with labels in CSVs). Join labels and build `root/class_name/image.jpg` first, or print the directory tree to debug.
 - **A batch isn't the shape you expect** → Confused yourself about whether the channels dim or the batch dim comes first. PyTorch is **(B, C, H, W)**.
 - **Loss is `nan` or wildly large after one batch** → Inputs aren't normalised, or label tensor isn't `Long` dtype for `CrossEntropyLoss`.
 - **The same image looks fine and broken in different cells** → Forgot a `.cpu().numpy()` conversion for matplotlib, *or* didn't undo a `Normalize` before plotting.

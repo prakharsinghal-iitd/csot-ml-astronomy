@@ -90,7 +90,7 @@ The result is an RGB image with shape `(3, H, W)` — which is, once more, exact
 
 ## A Note on FITS (For the Curious)
 
-Professional astronomers rarely work with JPGs. The native format is **FITS** (Flexible Image Transport System): a file that stores the raw floating-point pixel values *plus* a header full of metadata (sky coordinates, exposure time, filter, calibration constants). If you continue in astro-ML after this track, you'll meet FITS via the [`astropy`](https://www.astropy.org/) library. We use JPGs here purely because they're simpler and the labels are pre-packaged.
+Professional astronomers rarely work with JPGs. The native format is **FITS** (Flexible Image Transport System): a file that stores the raw floating-point pixel values *plus* a header full of metadata (sky coordinates, exposure time, filter, calibration constants). If you continue in astro-ML after this track, you'll meet FITS via the [`astropy`](https://www.astropy.org/) library. We use JPGs here because they're simpler to load in Colab; morphology labels come from the official GZ2 catalogues (CSV), not from folder names.
 
 ---
 

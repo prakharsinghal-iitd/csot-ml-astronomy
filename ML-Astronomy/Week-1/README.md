@@ -5,7 +5,7 @@
 This week is split into **two parts**:
 
 - **Part 1 — Foundations:** Colab + tensors + GPU, plus the astronomy of galaxy morphology.
-- **Part 2 — Data pipeline:** how telescopes/CCDs/filters produce our images, then loading them with `transforms`, `ImageFolder`, and `DataLoader`.
+- **Part 2 — Data pipeline:** how telescopes/CCDs/filters produce our images, then joining flat GZ2 files to CSV labels and loading them with `transforms`, `ImageFolder`, and `DataLoader`.
 
 ---
 
@@ -27,7 +27,7 @@ This week is split into **two parts**:
 | Check GPU availability and move tensors with `.to(device)`. | Connect morphology to astrophysics (gas, star formation, dynamics). |
 | Benchmark CPU vs. GPU and reason about the speedup. | Explain how a **CCD** turns photons into a 2D array of counts. |
 | Build a `transforms` pipeline (resize, to-tensor, normalise). | Explain why telescopes use **monochrome detectors + filters** (`ugriz`). |
-| Load a folder of images with `ImageFolder`. | Describe how three filter bands become a false-colour RGB image. |
+| Join flat GZ2 images to CSV labels; load with `ImageFolder`. | Describe how three filter bands become a false-colour RGB image. |
 | Batch and shuffle data with a `DataLoader`; plot a batch. | Identify well-known galaxies (M31, M87, NGC 1300) by morphology. |
 
 ---
@@ -80,7 +80,7 @@ You're ready for Week 2 when you can, without referring to the solutions:
 - [ ] Explain in your own words what `.shape` and `.device` mean.
 - [ ] Draw or describe the Hubble tuning fork and place an example galaxy on each prong.
 - [ ] Explain why a CCD image is monochrome and how three filters make a colour image.
-- [ ] Load the galaxy dataset with `ImageFolder`, build a `DataLoader`, and plot a labelled batch.
+- [ ] Join the GZ2 mapping + label CSVs, build an `ImageFolder` layout, create a `DataLoader`, and plot a labelled batch.
 
 ---
 
