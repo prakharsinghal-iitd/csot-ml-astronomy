@@ -31,7 +31,7 @@ Inspired by DevClub's Summer of Code, CSoT is the launchpad for freshers (and an
 | Week | Theme | Status |
 |------|----------------------------------------------|---------------|
 | 1    | [Foundations: Tensors, GPUs & the Galaxy Data Pipeline](ML-Astronomy/Week-1/) | Available |
-| 2    | [Baselines & Fully-Connected Networks](ML-Astronomy/Week-2/) | Coming soon |
+| 2    | [Baselines & Fully-Connected Networks](ML-Astronomy/Week-2/) | Available |
 | 3    | [CNNs, the Training Loop & Evaluation](ML-Astronomy/Week-3/) | Coming soon |
 | 4    | [To be announced](ML-Astronomy/Week-4/)      | Coming soon |
 | 5    | [To be announced](ML-Astronomy/Week-5/)      | Coming soon |

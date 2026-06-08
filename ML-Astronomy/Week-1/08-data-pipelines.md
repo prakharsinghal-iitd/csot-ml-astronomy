@@ -110,6 +110,55 @@ galaxy_data/
 
 Only after that step does `ImageFolder` apply. Real surveys often ship flat archives + tables — learning to join them is part of the job.
 
+#### Step-by-step recipe (Week 1 notebook)
+
+**1. Join the two CSVs**
+
+```python
+mapping = pd.read_csv("galaxy_raw/gz2_filename_mapping.csv")
+labels = pd.read_csv("galaxy_raw/gz2_hart16.csv").rename(columns={"dr7objid": "objid"})
+df = mapping.merge(labels[["objid", "gz2_class"]], on="objid", how="inner")
+```
+
+Each row now has `asset_id` (JPG filename), `objid`, and `gz2_class` (e.g. `Sc2t`, `Ei`).
+
+**2. Collapse to high-level class names**
+
+```python
+def high_level_label(gz2_class):
+    if not isinstance(gz2_class, str) or gz2_class == "A":
+        return None
+    if gz2_class.startswith("E"):  return "elliptical"
+    if gz2_class.startswith("SB"): return "spiral_barred"
+    if gz2_class.startswith("S"):  return "spiral"
+    return None
+
+df["label"] = df["gz2_class"].map(high_level_label)
+df = df.dropna(subset=["label"])
+```
+
+**3. Symlink into train / val / test class folders**
+
+For each label, take `PER_CLASS` galaxies, split 70% / 15% / 15%, and link files:
+
+```
+galaxy_data/train/elliptical/123.jpg  →  ../../galaxy_raw/images_gz2/123.jpg
+galaxy_data/val/spiral/456.jpg      →  ...
+galaxy_data/test/spiral_barred/789.jpg →  ...
+```
+
+**4. Point ImageFolder at each split**
+
+```python
+train_ds = ImageFolder("galaxy_data/train", transform=transform)
+val_ds   = ImageFolder("galaxy_data/val",   transform=transform)
+test_ds  = ImageFolder("galaxy_data/test",  transform=transform)
+```
+
+The full helper functions live in [`week1_data_solution.ipynb`](notebooks/week1_data_solution.ipynb) Steps 3–4. Copy them if you're stuck.
+
+> **Alternative:** If you already have one big class-folder tree (no train/val/test yet), you can use `random_split` on a single `ImageFolder` — see below. For GZ2 we prefer splitting **before** symlinking so filenames never leak across splits.
+
 ### `ImageFolder`: the easy button
 
 If your data is already laid out like this:
